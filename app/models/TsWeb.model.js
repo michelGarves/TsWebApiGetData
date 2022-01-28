@@ -125,4 +125,5 @@ Organisme.getAllEnabled = result => {
     result(null, res);
   });
 };
+
 module.exports= Organisme
