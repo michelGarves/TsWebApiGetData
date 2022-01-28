@@ -1,5 +1,5 @@
 ﻿'use strict';
- var Organisme = require("../models/TsWeb.model.js");
+ var Organisme = require("../models/Organisme.model.js");
 
 
 // Retrieve all Organismes from the database (with condition).
