@@ -27,13 +27,11 @@ const Organisme = function(organisme) {
 Organisme.findById = function (id, result) {
   sql.query(`SELECT * FROM usd_organisme WHERE id = ${id}`, (err, res) => {
     if (err) {
-      console.log("error: ", err);
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found organisme: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -51,12 +49,18 @@ Organisme.getAll = function (libelle, result)  {
 
   sql.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      
+      result(err, null);
+    }
+    if(res.length == 0){
+      if(libelle){
+        result({kind: "no_such_libelle"}, null)
+        return;
+      }
+      result({kind: "no_results"})
+      return;
     }
 
-    console.log("organismes: ", res);
+
     result(null, res);
   });
 };
@@ -64,12 +68,12 @@ Organisme.getAll = function (libelle, result)  {
 Organisme.getAllEnabled = result => {
   sql.query("SELECT * FROM usd_organisme WHERE isenable = 1", (err, res) => {
     if (err) {
-      console.log("error: ", err);
       result(null, err);
       return;
     }
-
-    console.log("organismes: ", res);
+    if(res.length == 0){
+      result({kind: "no_result"})
+    }
     result(null, res);
   });
 };
@@ -77,53 +81,224 @@ Organisme.getAllEnabled = result => {
 Organisme.getAllDisabled = result => {
   sql.query("SELECT * FROM usd_organisme WHERE isenable = 0", (err, res) => {
     if (err) {
-      console.log("error: ", err);
       result(null, err);
       return;
     }
-
-    console.log("organismes: ", res);
+    if(res.length == 0){
+      result({kind: "no_result"})
+      return;
+    }
     result(null, res);
+    return;
   });
 };
 
 Organisme.getAllActive = result => {
   sql.query("SELECT * FROM usd_organisme WHERE isactive = 1", (err, res) => {
     if (err) {
-      console.log("error: ", err);
       result(null, err);
       return;
     }
-
-    console.log("organismes: ", res);
+    if(res.length == 0){
+      result({kind: "no_result"})
+      return
+    }
     result(null, res);
+    return;
   });
 };
 
 Organisme.getAllUnactive = result => {
   sql.query("SELECT * FROM usd_organisme WHERE isactive = 0", (err, res) => {
     if (err) {
-      console.log("error: ", err);
       result(null, err);
       return;
     }
-
-    console.log("organismes: ", res);
+    if(res.length == 0){
+      result({kind: "no_result"}, null)
+      return;
+    }
     result(null, res);
+    return;
   });
 };
 
 Organisme.getAllEnabled = result => {
   sql.query("SELECT * FROM usd_organisme WHERE isenable = 1", (err, res) => {
     if (err) {
-      console.log("error: ", err);
       result(null, err);
       return;
     }
-
-    console.log("organismes: ", res);
+    if(res.length == 0){
+      result({kind: "no_result"})
+      return;
+    }
     result(null, res);
+    return
   });
 };
+
+Organisme.getAllCaisse = function(codeCaisse, result){
+
+    sql.query(`SELECT * FROM usd_organisme WHERE CAISSE_GESTIONNAIRE_CODE = ${codeCaisse}`, (err, res) =>{
+      if(err){
+        result({kind: "err_caisse"}, null);
+        return;
+      }
+      if(res.length == 0){
+        result({kind: "no_caisse"}, null);
+        return;
+      }
+      result(null, res);
+      return;
+    })
+  
+}
+
+Organisme.getCreatedBefore = function(year, result){
+
+  if(!year){
+    sql.query("SELECT * FROM usd_organisme", (err, result) => {
+      if(err){
+        result({kind: "err_get"}, null);
+        return;
+      }
+      else{
+        result(null, result);
+        return;
+      }
+    })
+  }else{
+    sql.query(`SELECT * FROM usd_organisme WHERE YEAR(CREATEDDATE)<${year}`, (err, res) => {
+
+      if(err){
+        result({kind: "err_date"}, null);
+        return
+      }else{
+
+        if(res.length == 0){
+          result({kind: "no_result"}, null);
+          return;
+        }else{
+          result(null, res);
+          return;
+        }
+
+      }
+
+    })
+  }
+
+}
+
+Organisme.getCreatedAfter = function(year, result){
+
+  if(!year){
+    sql.query("SELECT * FROM usd_organisme", (err, result) => {
+      if(err){
+        result({kind: "err_get"}, null);
+        return;
+      }
+      else{
+        result(null, result);
+        return;
+      }
+    })
+  }else{
+    sql.query(`SELECT * FROM usd_organisme WHERE YEAR(CREATEDDATE)>${year}`, (err, res) => {
+
+      if(err){
+        result({kind: "err_date"}, null);
+        return
+      }else{
+
+        if(res.length == 0){
+          result({kind: "no_result"}, null);
+          return;
+        }else{
+          result(null, res);
+          return;
+        }
+
+      }
+
+    })
+  }
+
+}
+
+Organisme.getUpdatedBefore = function(year, result){
+
+  if(!year){
+    sql.query("SELECT * FROM usd_organisme", (err, result) => {
+      if(err){
+        result({kind: "err_get"}, null);
+        return;
+      }
+      else{
+        result(null, result);
+        return;
+      }
+    })
+  }else{
+    sql.query(`SELECT * FROM usd_organisme WHERE YEAR(UPDATEDDATE)<${year}`, (err, res) => {
+
+      if(err){
+        result({kind: "err_date"}, null);
+        return
+      }else{
+
+        if(res.length == 0){
+          result({kind: "no_result"}, null);
+          return;
+        }else{
+          result(null, res);
+          return;
+        }
+
+      }
+
+    })
+  }
+
+}
+
+Organisme.getUpdatedAfter = function(year, result){
+
+  if(!year){
+    sql.query("SELECT * FROM usd_organisme", (err, result) => {
+      if(err){
+        result({kind: "err_get"}, null);
+        return;
+      }
+      else{
+        result(null, result);
+        return
+      }
+    })
+  }else{
+    sql.query(`SELECT * FROM usd_organisme WHERE YEAR(UPDATEDDATE)>${year}`, (err, res) => {
+
+      if(err){
+        result({kind: "err_date"}, null);
+        return
+      }else{
+
+        if(res.length == 0){
+          result({kind: "no_result"}, null);
+          return;
+        }else{
+          result(null, res);
+          return;
+        }
+
+      }
+
+    })
+  }
+
+}
+
+
 
 module.exports= Organisme

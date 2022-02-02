@@ -3,26 +3,44 @@
     const extTable = require("../controllers/Ext.controller.js");
 
     var router = require("express").Router();
-    router.delete("/truncate", extTable.truncateTable)
-    // Retrieve all Tutorials
-    router.get("/", organismes.findAll)
-  
+
+
+    //router.delete("/truncate", extTable.truncateTable)
+    
+    
+    // Retourne tout les organismes
+    router.get("/organismes", organismes.findAll)
+
+    // Retourne un unique Organisme selon son id
+    router.get("/organismes:id", organismes.findOne)
+
     // Retourne tout les organismes actifs
-    router.get("/active", organismes.findAllActive)
+    router.get("/organismes/active", organismes.findAllActive)
   
     //Retourne tout les organismes activés
-    router.get("/enable", organismes.findAllEnabled)
+    router.get("/organismes/enable", organismes.findAllEnabled)
 
     //Retourne tout les organismes inactifs
-    router.get("/unactive", organismes.findAllUnactive)
+    router.get("/organismes/unactive", organismes.findAllUnactive)
 
     //Retourne tout les organismes désactivés
-    router.get("/disabled", organismes.findAllDisabled)
+    router.get("/organismes/disable", organismes.findAllDisabled)
 
-    // Retrieve a single Tutorial with id
-    router.get("/:id", organismes.findOne)
+    //Retourne les organismes en fonction de leur code_caisse_gestionnaire 
+    router.get("/organismes/caisse:codecaisse", organismes.findAllCaisse)
+
+    //Retourne tout les organismes désactivés
+    router.get("/organismes/createdbefore:year", organismes.findCreatedBefore)
+
+    //Retourne tout les organismes désactivés
+    router.get("/organismes/createdafter:year", organismes.findCreatedAfter)
+
+    //Retourne tout les organismes désactivés
+    router.get("/organismes/updatedbefore:year", organismes.findUpdatedBefore)
+
+    //Retourne tout les organismes désactivés
+    router.get("/organismes/updatedafter:year", organismes.findUpdatedAfter)
 
     
-
-    app.use('/api/organismes', router);
+    app.use('/', router);
   };
