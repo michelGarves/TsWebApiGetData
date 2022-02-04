@@ -1,0 +1,449 @@
+swagger: '2.0'
+info:
+  description: API de récupération de données TsxCare
+  version: 1.0.0
+  title: TsWeb Api Data
+  contact:
+    email: michelgarves@gmail.com
+tags:
+- name: user
+
+paths:
+  /organismes:
+    get:
+      tags:
+      - user
+      operationId: getAll
+      description: |
+        Retourne au format JSON l'intégralité des organismes de la table, possibilité de passer un paramère libellé pour rechercher des organismes spécifiques selon leur nom
+      produces:
+      - application/json
+      parameters:
+        - in: query
+          name: libelle
+          type: string
+          required : false
+          description: | 
+            L'utilisateur peut spécifié un libellé, ou une partie d'un libellé pour retourner tout les organismes dont le libellé contient le paramètre
+      responses:
+        200:
+          description: liste d'objet(s) de type Organisme dont le libellé contient le paramètre rentré le cas échéant
+          schema:
+            $ref: '#/definitions/Organism'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'
+    
+  /organisme/{id}:
+    get:
+      tags:
+      - user
+      operationId: getOne
+      description: |
+        Retourne un unique organisme en fonction de l'ID spécifié 
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+            
+      responses:
+        200:
+          description: Retourne un objet Organisme dont l'ID correspond à celui rentré en paramètre.
+          schema:
+            $ref: '#/definitions/Organism'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'    
+  /organismes/active:
+    get:
+      tags:
+      - user
+      operationId: getAllActive
+      description: |
+        Retourne l'intégralité des organismes actifs (donc le champ ISACTIVE est configuré à 1)
+        
+      responses:
+        200:
+          description: Retourne une liste d'objet(s) de type Organisme donc le champ ISACTIVE est égal à 1
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organism'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'
+  /organismes/unactive:
+    get:
+      tags:
+      - user
+      operationId: getAllUnactive
+      description: |
+        Retourne l'intégralité des organismes inactifs(dont le champ ISACTIVE est configuré à 0)
+      responses:
+        200:
+          description: Retourne une liste d'objet(s) de type Organisme dont le champ ISACTIVE est égal à 0
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organism'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'      
+  /organismes/enable:
+    get:
+      tags:
+      - user
+      operationId: getAllEnabled
+      description: |
+        Retourne l'intégralité des organismes activés(dont le champ ISENABLE est configuré à 1)
+      responses:
+        200:
+          description: Retourne une liste d'objet(s) de type Organisme dont le champ ISENABLE est égal à 1
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organism'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'      
+  /organismes/disable:
+    get:
+      tags:
+      - user
+      operationId: getAllDisabled
+      description: |
+        Retourne l'intégralité des organismes désactivés(dont le champ ISENABLE est configuré à 0)
+      responses:
+        200:
+          description: Retourne une liste d'objet(s) de type Organisme dont le champ ISENABLE est égal à 0
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organism'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'
+            
+  /organismes/caisse/{codecaisse}:
+    get: 
+      tags:
+      - user
+      operationId: getAllCaisse
+      description: |
+        Retourne l'intégralité des organismes dont le code caisse gestionnaire correspond à celui rentré en paramètre
+      parameters: 
+        - in: path
+          name: codecaisse
+          type: string
+          required: true
+      responses:
+        200:
+          description: Retourne une liste d'objet(s) de type Organisme dont le champ CODE_CAISSE_GESTIONNAIRE est égal au paramètre rentré
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organism'
+        400:
+          description: Le paramètre rentré n'est pas valide
+          schema: 
+            $ref: '#/components/responses/BadFormat'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'
+  /organismes/createdbefore/{year}:
+    get: 
+      tags:
+      - user
+      operationId: getCreatedBefore
+      description: | 
+        Retourne l'intégralité des organismes dont l'année de création est strictement inférieure à celle rentrée en paramètre
+      parameters: 
+        - in: path
+          name: year
+          type: string
+          required: true
+      responses: 
+        200:
+          description: Retourne une liste d'objet(s) de type Organisme dont l'année du champ CREATEDDATE est inférieure à l'année rentrée en paramètre
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organism'
+        400:
+          description: Le paramètre rentré n'est pas valide
+          schema: 
+            $ref: '#/components/responses/BadFormat'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'
+  /organismes/createdafter/{year}:
+    get: 
+      tags:
+      - user
+      operationId: getCreatedAfter
+      description: | 
+        Retourne l'intégralité des organismes dont l'année de création est strictement supérieure à celle rentrée en paramètre
+      parameters: 
+        - in: path
+          name: year
+          type: string
+          required: true
+      responses: 
+        200:
+          description: Retourne une liste d'objet(s) de type Organisme dont l'année du champ CREATEDDATE est supérieure à l'année rentrée en paramètre
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organism'
+        400:
+          description: Le paramètre rentré n'est pas valide
+          schema: 
+            $ref: '#/components/responses/BadFormat'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'
+  /organismes/updatedbefore/{year}:
+    get: 
+      tags:
+      - user
+      operationId: getUpdatedBefore
+      description: | 
+        Retourne l'intégralité des organismes dont l'année de mise à jour est strictement inférieure à celle rentrée en paramètre
+      parameters: 
+        - in: path
+          name: year
+          type: string
+          required: true
+      responses: 
+        200:
+          description: Retourne une liste d'objet(s) de type Organisme dont l'année du champ UPDATEDDATE est inférieure à la date rentrée en paramètre
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organism'
+        400:
+          description: Le paramètre rentré n'est pas valide
+          schema: 
+            $ref: '#/components/responses/BadFormat'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'    
+  /organismes/updatedafter/{year}:
+    get: 
+      tags:
+      - user
+      operationId: getUpdatedAfter
+      description: | 
+        Retourne l'intégralité des organismes dont l'année de mise à jour est strictement supérieure à celle rentrée en paramètre
+      parameters: 
+        - in: path
+          name: year
+          type: string
+          required: true
+      responses: 
+        200:
+          description: Retourne une liste d'objet(s) de type Organisme dont l'année du champ UPDATEDDATE est supérieure à la date rentrée en paramètre
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organism'
+        
+        400:
+          description: Le paramètre rentré n'est pas valide
+          schema: 
+            $ref: '#/components/responses/BadFormat'
+        404:
+          description: Aucun objet trouvé
+          schema:
+            $ref: '#/components/responses/NotFound'
+        500:
+          description: Le serveur est injoignable
+          schema:
+            $ref: '#/components/responses/ServerError'
+# Descriptions of common components
+components:
+  responses:
+    NotFound:
+      description: Impossible de trouver la ressource demandée
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadFormat:
+      description: Le paramètre rentré n'est pas dans un bon format
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error' 
+    ServerError:
+      description: Erreur côté serveur
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    # Schema for error response body
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - code
+        - message
+definitions:
+  Organism:
+    type: object
+    required:
+    - ID
+    - ID_EXT_ORGANISME
+    - ID_WRK_ADRESSE
+    - ID_TS_TYPE_ORGANISME
+    - REGIME_CODE
+    - CAISSE_GESTIONNAIRE_CODE
+    - CENTRE_GESTIONNAIRE_CODE
+    - ORGANISME_LIBELLE
+    - ORGANISME_DEST_CODE
+    - CENTRE_INFO_CODE
+    - ROUTAGE_CODE
+    - NUM_ORGANISME
+    - DOMAINE
+    - INDICATEUR_TRAITEMENT_AMC
+    - ID_HOTE_GESTION
+    - ISACTIVE
+    - ISENABLE
+    - CREATEDDATE
+    - UPDATEDDATE
+    
+    properties:
+      ID:
+        type: integer
+        maxLength: 11 
+        example: 3
+      ID_EXT_ORGANISME:
+        type: integer
+        maxLength: 11
+        example: 1
+      ID_WRK_ORGANISME:
+        type: integer
+        maxLength: 11
+        example: 71
+      ID_TS_TYPE_ORGANISME:
+        type: integer
+        maxLength: 11
+        example: 71
+      REGIME_CODE:
+        type: string
+        maxLength: 45
+        example: 01
+      CAISSE_GESTIONNAIRE_CODE:
+        type: string
+        maxLength: 45
+        example: 349
+      CENTRE_GESTIONNAIRE_CODE:
+        type: string
+        maxLength: 45
+        example: 9881
+      ORGANISME_LIBELLE:
+        type: string
+        maxLength: 255
+        example: AMC fictive CNDA
+      ORGANISME_DEST_CODE:
+        type: string
+        maxLength: 45
+        example: 25
+      CENTRE_INFO_CODE:
+        type: string
+        maxLength: 45
+        example: 002
+      ROUTAGE_CODE:
+        type: string
+        maxLength: 2
+        example:
+      NUM_ORGANISME:
+        type: string
+        maxLength: 16
+        example: 1100000000
+      DOMAINE:
+        type: string
+        maxLength: 255
+        example: 
+      INDICATEUR_TRAITEMENT_AMC:
+        type: string
+        maxLength: 2
+        example:
+      ID_HOTE_GESTION:
+        type: string
+        maxLength: 255
+        example:
+      ISACTIVE:
+        type: integer
+        minimum: 0
+        maximum: 1
+        example: 1
+      ISENABLE:
+        type: integer
+        minimum: 0
+        maximum: 1
+        example: 1
+      CREATEDDATE:
+        type: string
+        format: date-time
+        example: "2021-08-29T14:12:33.000Z"
+      UPDATEDDATE:
+        type: string
+        format: date-time
+        example: "2021-08-29T14:12:33.000Z"

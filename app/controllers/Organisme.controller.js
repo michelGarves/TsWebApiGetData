@@ -9,16 +9,16 @@ exports.findAll = (req, res) => {
     Organisme.getAll(libelle, (err, data) => {
       if (err) {
         if (err.kind === "no_such_libelle") {
-          res.send({message: `no records containing ${libelle} in "ORGANISME_LIBELLE"`})
+          res.status(404).send({message: `no records containing ${libelle} in "ORGANISME_LIBELLE"`})
         }else if(err.kind ==="no_results"){
-          res.send({message: "no records"});
+          res.status(404).send({message: "no records"});
         } 
         else {
           res.status(500).send({
-            message: "Error retrieving Organism with id " + req.params.id
+            message: err.message || "Error retrieving Organisms"
           });
         }
-       } else res.send(data);
+       } else res.status(200).send(data);
     });
 };
 
@@ -32,10 +32,10 @@ exports.findOne = (req, res) => {
             });
           } else {
             res.status(500).send({
-              message: "Error retrieving Organism with id " + req.params.id
+              message: err.message || "Error retrieving Organism with id " + req.params.id
             });
           }
-        } else res.send(data);
+        } else res.status(200).send(data);
       });
 };
 
@@ -44,7 +44,7 @@ exports.findAllActive = (req, res) => {
     Organisme.getAllActive((err, data) => {
         if (err){
           if(err.kind === "no_result"){
-            res.send({message: "no active organism(s)"});
+            res.status(404).send({message: "not found active organism(s)"});
           }else{
           res.status(500).send({
             message:
@@ -52,7 +52,7 @@ exports.findAllActive = (req, res) => {
           });
         }
         }
-        else res.send(data);
+        else res.status(200).send(data);
       });
 };
 
@@ -61,7 +61,7 @@ exports.findAllEnabled = (req, res) => {
     Organisme.getAllEnabled((err, data) => {
       if (err){
         if(err.kind === "no_result"){
-          res.send({message: "no enabled organism(s)"});
+          res.status(404).send({message: "not found enabled organism(s)"});
         }else{
         res.status(500).send({
           message:
@@ -69,7 +69,7 @@ exports.findAllEnabled = (req, res) => {
         });
       }
       }
-        else res.send(data);
+        else res.status(200).send(data);
       });
 };
 
@@ -78,7 +78,7 @@ exports.findAllDisabled = (req, res) => {
     Organisme.getAllDisabled((err, data) => {
       if (err){
         if(err.kind === "no_result"){
-          res.send({message: "no disabled organism(s)"});
+          res.status(404).send({message: "not found disabled organism(s)"});
         }else{
         res.status(500).send({
           message:
@@ -86,7 +86,7 @@ exports.findAllDisabled = (req, res) => {
         });
       }
       }
-        else res.send(data);
+        else res.status(200).send(data);
       });
 };
 
@@ -95,7 +95,7 @@ exports.findAllUnactive = (req, res) => {
     Organisme.getAllUnactive((err, data) => {
       if (err){
         if(err.kind === "no_result"){
-          res.send({message: "no unactive organism(s)"});
+          res.status(404).send({message: "not found unactive organism(s)"});
         }
         else{
         res.status(500).send({
@@ -104,28 +104,26 @@ exports.findAllUnactive = (req, res) => {
         });
       }
       }
-        else res.send(data);
+        else res.status(200).send(data);
       });
 };
 
 exports.findAllCaisse = (req, res) => {
   Organisme.getAllCaisse(req.params.codecaisse, (err, data) => {
     if (err){
-      if(err.kind === "err_get"){
-        res.status(500).send({
+      if(err.king === "err_caisse"){
+        res.status(400).send({
           message:
-            err.message || `error occured while searching for organisms according to "caisse_gestionnaire_code".`
-        });
-      }else if(err.king === "err_caisse"){
-        res.status(500).send({
-          message:
-            err.message || `could not get a right "caisse_gestionnaire_code".`
+            err.message || `please enter a valid "caisse_gestionnaire_code".`
         });
       }
       else if(err.kind === "no_caisse"){
-        res.send({message: `no records with such "CAISSE_GESTIONNAIRE_CODE"`})
+        res.status(404).send({message: `not found records with such "CAISSE_GESTIONNAIRE_CODE"`})
       }
-    }else res.send(data);
+      else{
+        res.status(500).send({message: err.message || `error occured while trying to search for organisms according to 'CODE_GESTIONNAIRE_CODE'`})
+      }
+    }else res.status(200).send(data);
   })
 }
 
@@ -138,15 +136,15 @@ exports.findCreatedBefore = (req, res) => {
             err.message || "error occured while searching for organisms according to their creation date."
         });
       }else if (err.kind === "err_date"){
-        res.status(500).send({
+        res.status(400).send({
           message:
             err.message || "wrong date format."
         });
       }
       else if (err.kind === "no_result"){
-        res.json({message: `No Organisms created before ${req.params.year}`})
+        res.status(404).send({message: `Not found Organisms created before ${req.params.year}`})
       }
-    }else res.send(data);
+    }else res.status(200).send(data);
   })
 }
 
@@ -159,15 +157,15 @@ exports.findUpdatedBefore = (req, res) => {
             err.message || "error occured while searching for organisms according to their update date."
         });
       }else if (err.kind === "err_date"){
-        res.status(500).send({
+        res.status(400).send({
           message:
             err.message || "wrong date format."
         });
       }
       else if (err.kind === "no_result"){
-        res.json({message: `No Organisms updated before ${req.params.year}`})
+        res.status(404).send({message: `Not found Organisms updated before ${req.params.year}`})
       }
-    }else res.send(data);
+    }else res.status(200).send(data);
   })
 }
 
@@ -180,15 +178,15 @@ exports.findCreatedAfter = (req, res) => {
             err.message || "error occured while searching for organisms according to their creation date."
         });
       }else if (err.kind === "err_date"){
-        res.status(500).send({
+        res.status(400).send({
           message:
             err.message || "wrong date format."
         });
       }
       else if (err.kind === "no_result"){
-        res.json({message: `No Organisms created after ${req.params.year}`})
+        res.status(404).send({message: `Not found Organisms created after ${req.params.year}`})
       }
-    }else res.send(data);
+    }else res.status(200).send(data);
   })
 }
 
@@ -207,9 +205,9 @@ exports.findUpdatedAfter = (req, res) => {
         });
       }
       else if (err.kind === "no_result"){
-        res.json({message: `No Organisms updated after ${req.params.year}`})
+        res.status(404).send({message: `Not found Organisms updated after ${req.params.year}`})
       }
-    }else res.send(data);
+    }else res.status(200).send(data);
   })
 }
 

@@ -1,18 +1,14 @@
 ﻿module.exports = app => {
     const organismes = require("../controllers/Organisme.controller.js");
-    const extTable = require("../controllers/Ext.controller.js");
 
     var router = require("express").Router();
-
-
-    //router.delete("/truncate", extTable.truncateTable)
     
     
     // Retourne tout les organismes
     router.get("/organismes", organismes.findAll)
 
     // Retourne un unique Organisme selon son id
-    router.get("/organismes:id", organismes.findOne)
+    router.get("/organisme/:id", organismes.findOne)
 
     // Retourne tout les organismes actifs
     router.get("/organismes/active", organismes.findAllActive)
@@ -27,19 +23,19 @@
     router.get("/organismes/disable", organismes.findAllDisabled)
 
     //Retourne les organismes en fonction de leur code_caisse_gestionnaire 
-    router.get("/organismes/caisse:codecaisse", organismes.findAllCaisse)
+    router.get("/organismes/caisse/:codecaisse", organismes.findAllCaisse)
 
     //Retourne tout les organismes désactivés
-    router.get("/organismes/createdbefore:year", organismes.findCreatedBefore)
+    router.get("/organismes/createdbefore/:year", organismes.findCreatedBefore)
 
     //Retourne tout les organismes désactivés
-    router.get("/organismes/createdafter:year", organismes.findCreatedAfter)
+    router.get("/organismes/createdafter/:year", organismes.findCreatedAfter)
 
     //Retourne tout les organismes désactivés
-    router.get("/organismes/updatedbefore:year", organismes.findUpdatedBefore)
+    router.get("/organismes/updatedbefore/:year", organismes.findUpdatedBefore)
 
     //Retourne tout les organismes désactivés
-    router.get("/organismes/updatedafter:year", organismes.findUpdatedAfter)
+    router.get("/organismes/updatedafter/:year", organismes.findUpdatedAfter)
 
     
     app.use('/', router);
